@@ -3,6 +3,7 @@ package com.example.Reviewed.controller;
 
 import com.example.Reviewed.Dto.ReviewPageDto;
 import com.example.Reviewed.Dto.UserDto;
+import com.example.Reviewed.model.CommentReplyEntity;
 import com.example.Reviewed.service.ReviewPageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -60,4 +61,11 @@ public class ReviewsController {
         ReviewPageDto reviewPageDto = reviewPageService.setReviewReply(reviewId, comment);
         return ResponseEntity.ok(reviewPageDto);
     }
+
+    @PostMapping("reviewcoment/{contentId}/{reviewid}/{commentId}")
+    public ResponseEntity<CommentReplyEntity>  setCommentReply(@PathVariable("contentId") long contentId, @PathVariable("reviewid") long reviewId, @PathVariable("commentId") long commentId, @RequestBody String comment){
+        CommentReplyEntity reply = reviewPageService.setCommentReply(contentId,reviewId,commentId, comment);
+        return ResponseEntity.ok(reply);
+    }
+
 }

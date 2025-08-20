@@ -1,5 +1,6 @@
 package com.example.Reviewed.Dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 
@@ -7,6 +8,7 @@ import lombok.Data;
 public class UserDto {
 
     private Long id;
+    @JsonIgnore
     private String email;
     private String name;
 

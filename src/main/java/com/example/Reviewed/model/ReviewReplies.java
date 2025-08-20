@@ -1,5 +1,6 @@
 package com.example.Reviewed.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -15,11 +16,14 @@ public class ReviewReplies extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "review_id")
+    @JsonIgnore
     private ContentReviews review;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity repliedUser;
+
+
 
     public Long getId() {
         return id;

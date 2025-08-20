@@ -1,9 +1,6 @@
 package com.example.Reviewed.serviceimpl;
 
-import com.example.Reviewed.Dto.ReivewRepliesDto;
-import com.example.Reviewed.Dto.ReviewAndUserDto;
-import com.example.Reviewed.Dto.ReviewPageDto;
-import com.example.Reviewed.Dto.UserDto;
+import com.example.Reviewed.Dto.*;
 import com.example.Reviewed.model.*;
 import com.example.Reviewed.repository.*;
 import com.example.Reviewed.service.ReviewPageService;
@@ -12,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ReviewPageServiceImpl implements ReviewPageService {
@@ -42,6 +37,9 @@ public class ReviewPageServiceImpl implements ReviewPageService {
 
     @Autowired
     ReviewRepliesRepo reviewRepliesRepo;
+
+    @Autowired
+    CommentReplyRepo commentReplyRepo;
 
     @Override
     public List<ReviewPageDto> AllReviews() {
@@ -98,6 +96,7 @@ public class ReviewPageServiceImpl implements ReviewPageService {
         Optional<ContentEntity> contentEntity = contentRepository.findById(userContentInteraction.getContentId());
         reviewPageDto.setContentName(contentEntity.get().getTitle());
         reviewPageDto.setContentPoster(contentEntity.get().getPoster());
+        reviewPageDto.setContentId(contentEntity.get().getId());
         UserEntity userEntity1 = authService.getCurrentUser();
         UserContentInteraction checkInteractionWithContent = userContentInteractionRepo.findByContentIdAndUserId(userEntity1.getId(),userContentInteraction.getContentId());
         if(checkInteractionWithContent!=null){
@@ -134,13 +133,21 @@ public class ReviewPageServiceImpl implements ReviewPageService {
             }
              if(contentReview.isReplied()>0){
                  List<ReviewReplies> reviewRepliesList = reviewRepliesRepo.findByReview_Id(contentReview.getId());
-                 List<ReivewRepliesDto> reivewRepliesDtoList = new ArrayList<>();
+                 List<CommentsDto> reivewRepliesDtoList = new ArrayList<>();
                  for(ReviewReplies reviewReplies: reviewRepliesList){
                      ReivewRepliesDto reviewRepliesDto = modelMapper.map(reviewReplies,ReivewRepliesDto.class);
                      reviewRepliesDto.setReply(reviewReplies.getReply());
                      UserDto user = modelMapper.map(reviewReplies.getRepliedUser(),UserDto.class);
                      reviewRepliesDto.setUserDto(user);
-                     reivewRepliesDtoList.add(reviewRepliesDto);
+                     List<CommentReplyEntity> commentReplyEntityList = commentReplyRepo.findByMasterComment_Id(reviewReplies.getId());
+//                        List<ReviewReplies> commentRepliesList = new ArrayList<>();
+//                        for(CommentReplyEntity commentReplyEntity :commentReplyEntityList){
+//                            commentRepliesList.add(commentReplyEntity.getCommentedBy());
+//                        }
+                     CommentsDto commentsDto = new CommentsDto();
+                     commentsDto.setCommentReply(reviewRepliesDto);
+                     commentsDto.setReplies(commentReplyEntityList);
+                     reivewRepliesDtoList.add(commentsDto);
                  }
                  reviewPageDto.setReviewReplies(reivewRepliesDtoList);
              }
@@ -254,5 +261,34 @@ public class ReviewPageServiceImpl implements ReviewPageService {
             userDtoList.add(userDto);;
         }
         return userDtoList;
+    }
+
+    @Override
+    public CommentReplyEntity setCommentReply(long contentId, long reviewId, long commentId, String comment) {
+        UserEntity userEntity = authService.getCurrentUser();
+        ReviewReplies reviewReplies = new ReviewReplies();
+        reviewReplies.setReply(comment);
+        reviewReplies.setRepliedUser(userEntity);
+        reviewReplies=reviewRepliesRepo.save(reviewReplies);
+        CommentReplyEntity commentReplyEntity = new CommentReplyEntity();
+        Optional<ReviewReplies> commentedTo =  reviewRepliesRepo.findById(commentId);
+        commentReplyEntity.setCommentedBy(reviewReplies);
+        commentReplyEntity.setCommentedTo(commentedTo.get());
+        commentReplyEntity.setMasterComment(commentedTo.get());
+        commentReplyEntity.setContentEntity(contentRepository.findById(contentId).get());
+        commentReplyRepo.save(commentReplyEntity);
+        CommentsDto commentsDto =  constructCommentDto(commentedTo.get().getId());
+//        ReivewRepliesDto reivewRepliesDto = modelMapper.map(commentedTo.get(),ReivewRepliesDto.class);
+//        commentsDto.setCommentReply(reivewRepliesDto);
+        int size = commentsDto.getReplies().size()-1;
+        return commentsDto.getReplies().get(size);
+
+    }
+
+    private CommentsDto constructCommentDto(Long masterId){
+        CommentsDto commentsDto = new CommentsDto();
+        List<CommentReplyEntity> commentReplyEntity = commentReplyRepo.findByMasterComment_Id(masterId);
+        commentsDto.setReplies(commentReplyEntity);
+        return commentsDto;
     }
 }

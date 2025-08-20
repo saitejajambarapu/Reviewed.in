@@ -1,14 +1,18 @@
 package com.example.Reviewed.Dto;
 
+import com.example.Reviewed.model.CommentReplyEntity;
 import com.example.Reviewed.model.ContentReviews;
 import com.example.Reviewed.model.ReviewReplies;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class ReviewPageDto {
     private Long id;
+
+    private  Long contentId;
 
     private String contentName;
 
@@ -16,7 +20,7 @@ public class ReviewPageDto {
 
     private ReviewAndUserDto contentReviews;
 
-    private List<ReivewRepliesDto>  reviewReplies;
+    private List<CommentsDto> reviewReplies;
 
     private List<UserDto> isLiked;
 
@@ -51,6 +55,14 @@ public class ReviewPageDto {
         this.id = id;
     }
 
+    public Long getContentId() {
+        return contentId;
+    }
+
+    public void setContentId(Long contentId) {
+        this.contentId = contentId;
+    }
+
     public float getRating() {
         return rating;
     }
@@ -83,11 +95,11 @@ public class ReviewPageDto {
         this.contentReviews = contentReviews;
     }
 
-    public List<ReivewRepliesDto> getReviewReplies() {
+    public List<CommentsDto> getReviewReplies() {
         return reviewReplies;
     }
 
-    public void setReviewReplies(List<ReivewRepliesDto> reviewReplies) {
+    public void setReviewReplies(List<CommentsDto> reviewReplies) {
         this.reviewReplies = reviewReplies;
     }
 

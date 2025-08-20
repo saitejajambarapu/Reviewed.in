@@ -13,9 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -47,6 +45,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     UserContentInteractionRepo userContentInteractionRepo;
+    @Autowired
+    CommentReplyRepo commentReplyRepo;
 
     @Override
     public UserEntity getUserById(Long userId) {
@@ -115,13 +115,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 }
                 if(contentReview.isReplied()>0){
                     List<ReviewReplies> reviewRepliesList = reviewRepliesRepo.findByReview_Id(contentReview.getId());
-                    List<ReivewRepliesDto> reivewRepliesDtoList = new ArrayList<>();
+                    List<CommentsDto> reivewRepliesDtoList = new ArrayList<>();
                     for(ReviewReplies reviewReplies: reviewRepliesList){
+                        List<ReivewRepliesDto> commentRepliesDtoList = new ArrayList<>();
                         ReivewRepliesDto reviewRepliesDto = modelMapper.map(reviewReplies,ReivewRepliesDto.class);
                         reviewRepliesDto.setReply(reviewReplies.getReply());
                         UserDto userDto1 = modelMapper.map(reviewReplies.getRepliedUser(),UserDto.class);
                         reviewRepliesDto.setUserDto(userDto1);
-                        reivewRepliesDtoList.add(reviewRepliesDto);
+                        List<CommentReplyEntity> commentReplyEntityList = commentReplyRepo.findByMasterComment_Id(reviewReplies.getId());
+//                        List<ReviewReplies> commentRepliesList = new ArrayList<>();
+//                        for(CommentReplyEntity commentReplyEntity :commentReplyEntityList){
+//                            commentRepliesList.add(commentReplyEntity.getCommentedBy());
+//                        }
+                        CommentsDto commentsDto = new CommentsDto();
+                        commentsDto.setCommentReply(reviewRepliesDto);
+                        commentsDto.setReplies(commentReplyEntityList);
+                        reivewRepliesDtoList.add(commentsDto);
                     }
                     reviewPageDto.setReviewReplies(reivewRepliesDtoList);
                 }

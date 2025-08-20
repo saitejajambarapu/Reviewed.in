@@ -40,10 +40,12 @@ public class ApiService {
                     .retrieve()
                     .bodyToMono(PaginatedContentMono.class);
             PaginatedContentMono paginatedContentMono = contentMono.block();
-            if(((Integer.parseInt(paginatedContentMono.getTotalResults()))-(paginatedContentMono.getContentDtoList().size()*pageNumber)<=0)){
+            if(paginatedContentMono.getTotalResults()!=null && ((Integer.parseInt(paginatedContentMono.getTotalResults()))-(paginatedContentMono.getContentDtoList().size()*pageNumber)<=0)){
+                contentEntity.saveEntity(paginatedContentMono);
                 break;
             }else{
-            contentEntity.saveEntity(paginatedContentMono);
+                if (paginatedContentMono.getTotalResults()!=null)  contentEntity.saveEntity(paginatedContentMono);
+
         }
             pageNumber+=1;
         }
