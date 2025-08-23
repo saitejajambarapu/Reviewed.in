@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Min;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,6 +25,22 @@ public class ContentReviews extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private UserEntity reviewedBy;
+
+    @OneToMany(mappedBy = "likedReview", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewLikes> likedList = new ArrayList<>();
+
+    @OneToOne(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserContentInteraction interaction;
+
+    @OneToMany(mappedBy = "dislikedReview", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewDislikes> dislikeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewReplies> reviewReplies = new ArrayList<>();
+
+
+
+
 
     public long getLikes() {
         return likes;

@@ -285,6 +285,12 @@ public class ReviewPageServiceImpl implements ReviewPageService {
 
     }
 
+    @Override
+    public boolean deleteReivew(long reviewId) {
+       contentReviewsRepo.deleteById(reviewId);
+       return true;
+    }
+
     private CommentsDto constructCommentDto(Long masterId){
         CommentsDto commentsDto = new CommentsDto();
         List<CommentReplyEntity> commentReplyEntity = commentReplyRepo.findByMasterComment_Id(masterId);

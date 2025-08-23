@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
 public class ReviewReplies extends BaseEntity {
@@ -22,6 +25,9 @@ public class ReviewReplies extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity repliedUser;
+
+    @OneToMany(mappedBy = "commentedTo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentReplyEntity> commnetReply = new ArrayList<>();
 
 
 

@@ -22,4 +22,6 @@ public interface ReviewPageService {
     List<UserDto> removeReviewDisLike(long reviewId);
 
     CommentReplyEntity setCommentReply(long contentId, long reviewId, long commentId, String comment);
+
+    boolean deleteReivew(long reviewId);
 }
