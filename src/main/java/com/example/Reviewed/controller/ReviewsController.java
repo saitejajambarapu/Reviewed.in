@@ -74,4 +74,10 @@ public class ReviewsController {
         return ResponseEntity.ok(isDeleted);
     }
 
+    @DeleteMapping("deletereviewcomment/{id}")
+    public ResponseEntity<Boolean>  deleteComment(@PathVariable("id") long commentId){
+        boolean isDeleted = reviewPageService.deleteComment(commentId);
+        return ResponseEntity.ok(isDeleted);
+    }
+
 }

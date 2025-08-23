@@ -24,4 +24,6 @@ public interface ReviewPageService {
     CommentReplyEntity setCommentReply(long contentId, long reviewId, long commentId, String comment);
 
     boolean deleteReivew(long reviewId);
+
+    boolean deleteComment(long commentId);
 }

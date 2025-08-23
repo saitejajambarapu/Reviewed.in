@@ -287,8 +287,24 @@ public class ReviewPageServiceImpl implements ReviewPageService {
 
     @Override
     public boolean deleteReivew(long reviewId) {
-       contentReviewsRepo.deleteById(reviewId);
-       return true;
+        UserEntity loggedInUser = authService.getCurrentUser();
+        Optional<ContentReviews> review = contentReviewsRepo.findById(reviewId);
+        if(!loggedInUser.getId().equals(review.get().getReviewedBy().getId())){
+            return false;
+        }
+        contentReviewsRepo.deleteById(reviewId);
+        return true;
+    }
+
+    @Override
+    public boolean deleteComment(long commentId) {
+        UserEntity loggedInUser = authService.getCurrentUser();
+        Optional<ReviewReplies> reviewReplies = reviewRepliesRepo.findById(commentId);
+        if(!loggedInUser.getId().equals(reviewReplies.get().getRepliedUser().getId())){
+            return false;
+        }
+        reviewRepliesRepo.deleteById(commentId);
+        return true;
     }
 
     private CommentsDto constructCommentDto(Long masterId){

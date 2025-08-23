@@ -27,7 +27,12 @@ public class ReviewReplies extends BaseEntity {
     private UserEntity repliedUser;
 
     @OneToMany(mappedBy = "commentedTo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<CommentReplyEntity> commnetReply = new ArrayList<>();
+
+    @OneToMany(mappedBy = "commentedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<CommentReplyEntity> commentRepliedBy = new ArrayList<>();
 
 
 
