@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/content")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class ContentDetailsController {
 
 //    @Autowired
