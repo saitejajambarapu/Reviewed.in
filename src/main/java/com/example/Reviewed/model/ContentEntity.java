@@ -2,6 +2,7 @@ package com.example.Reviewed.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class ContentEntity {
     private String response;
 
     @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude  // ⚠️ Prevent StackOverflowError
     private List<RatingEntity> ratings;
 
     public Long getId() {

@@ -2,6 +2,7 @@ package com.example.Reviewed.controller;
 
 
 import com.example.Reviewed.Dto.ReviewPageDto;
+import com.example.Reviewed.Dto.SingleReviewPageDto;
 import com.example.Reviewed.Dto.UserDto;
 import com.example.Reviewed.model.CommentReplyEntity;
 import com.example.Reviewed.service.ReviewPageService;
@@ -31,7 +32,7 @@ public class ReviewsController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getReviewById(@PathVariable long id){
-    ReviewPageDto reviewPageDto = reviewPageService.getReviewByID(id);
+        SingleReviewPageDto reviewPageDto = reviewPageService.getReviewByID(id);
     return  ResponseEntity.ok(reviewPageDto);
     }
 
@@ -58,7 +59,7 @@ public class ReviewsController {
 
     @PostMapping("reviewcoment/{id}")
     public ResponseEntity<?>  setReviewReply(@PathVariable("id") long reviewId,@RequestBody String comment){
-        ReviewPageDto reviewPageDto = reviewPageService.setReviewReply(reviewId, comment);
+        SingleReviewPageDto reviewPageDto = reviewPageService.setReviewReply(reviewId, comment);
         return ResponseEntity.ok(reviewPageDto);
     }
 

@@ -18,4 +18,6 @@ public interface UserContentInteractionRepo extends JpaRepository<UserContentInt
     UserContentInteraction findByContentIdAndUserId(long id, long contentId);
 
     List<UserContentInteraction> findByuser_id(Long id);
+
+    List<UserContentInteraction> findByContentId(Long contentId);
 }

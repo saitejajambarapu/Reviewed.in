@@ -54,6 +54,8 @@ public class ReviewPageServiceImpl implements ReviewPageService {
                 Optional<ContentEntity> contentEntity = contentRepository.findById(userContentInteraction.getContentId());
                 reviewPageDto.setContentName(contentEntity.get().getTitle());
                 reviewPageDto.setContentPoster(contentEntity.get().getPoster());
+                reviewPageDto.setImdbId(contentEntity.get().getImdbID());
+                reviewPageDto.setContentId(contentEntity.get().getId());
                     ContentReviews contentReview = userContentInteraction.getReview();
                     ReviewAndUserDto reviewAndUserDto = modelMapper.map(contentReview, ReviewAndUserDto.class);
                     UserDto userDto = modelMapper.map(contentReview.getReviewedBy(), UserDto.class);
@@ -88,14 +90,15 @@ public class ReviewPageServiceImpl implements ReviewPageService {
     }
 
     @Override
-    public ReviewPageDto getReviewByID(long id) {
-        ReviewPageDto reviewPageDto = new ReviewPageDto();
+    public SingleReviewPageDto getReviewByID(long id) {
+        SingleReviewPageDto reviewPageDto = new SingleReviewPageDto();
         UserContentInteraction userContentInteraction= userContentInteractionRepo.findByReview_Id(id);
         reviewPageDto.setId(userContentInteraction.getReview().getId());
         reviewPageDto.setRating(userContentInteraction.getRating());
         Optional<ContentEntity> contentEntity = contentRepository.findById(userContentInteraction.getContentId());
         reviewPageDto.setContentName(contentEntity.get().getTitle());
         reviewPageDto.setContentPoster(contentEntity.get().getPoster());
+        reviewPageDto.setImdbId(contentEntity.get().getImdbID());
         reviewPageDto.setContentId(contentEntity.get().getId());
         UserEntity userEntity1 = authService.getCurrentUser();
         UserContentInteraction checkInteractionWithContent = userContentInteractionRepo.findByContentIdAndUserId(userEntity1.getId(),userContentInteraction.getContentId());
@@ -151,6 +154,83 @@ public class ReviewPageServiceImpl implements ReviewPageService {
                  }
                  reviewPageDto.setReviewReplies(reivewRepliesDtoList);
              }
+             List<ReviewPageDto> reviewPageDtos = new ArrayList<>();
+             List<UserContentInteraction> similarReviewsContents = userContentInteractionRepo.findByContentId(userContentInteraction.getContentId());
+             if(similarReviewsContents!=null){
+                 for(UserContentInteraction contentInteraction : similarReviewsContents){
+                     ReviewPageDto singleReviewPageDto = generateReviewByUCI(contentInteraction);
+                     reviewPageDtos.add(singleReviewPageDto);
+                 }
+             }
+             reviewPageDto.setSimilarReviews(reviewPageDtos);
+        }
+
+
+        return  reviewPageDto;
+    }
+
+
+    private ReviewPageDto generateReviewByUCI(UserContentInteraction userContentInteraction){
+        ReviewPageDto reviewPageDto = new ReviewPageDto();
+        reviewPageDto.setId(userContentInteraction.getReview().getId());
+        reviewPageDto.setRating(userContentInteraction.getRating());
+        Optional<ContentEntity> contentEntity = contentRepository.findById(userContentInteraction.getContentId());
+        reviewPageDto.setContentName(contentEntity.get().getTitle());
+        reviewPageDto.setContentPoster(contentEntity.get().getPoster());
+        reviewPageDto.setImdbId(contentEntity.get().getImdbID());
+        reviewPageDto.setContentId(contentEntity.get().getId());
+//        UserEntity userEntity1 = authService.getCurrentUser();
+//        UserContentInteraction checkInteractionWithContent = userContentInteractionRepo.findByContentIdAndUserId(userEntity1.getId(),userContentInteraction.getContentId());
+//        if(checkInteractionWithContent!=null){
+//            reviewPageDto.setLikedList(checkInteractionWithContent.isLiked());
+//            reviewPageDto.setWatchList(checkInteractionWithContent.isWatched());
+//        }
+        if(userContentInteraction.getReview()!=null){
+            ContentReviews contentReview = userContentInteraction.getReview();
+            ReviewAndUserDto reviewAndUserDto = modelMapper.map(contentReview,ReviewAndUserDto.class);
+            UserDto userDto = modelMapper.map(contentReview.getReviewedBy(),UserDto.class);
+            reviewAndUserDto.setUserDto(userDto);
+            reviewPageDto.setContentReviews(reviewAndUserDto);
+//            if (contentReview.getLikes()>0){
+//                List<ReviewLikes> reviewLikes = reviewLikesRepo.findBylikedReview_Id(contentReview.getId());
+//                List<UserDto> likedUserList = new ArrayList<>();
+//                for (ReviewLikes reviewLikes1 : reviewLikes){
+//                    UserEntity userEntity = reviewLikes1.getLikedByUser();
+//                    userDto = modelMapper.map(userEntity,UserDto.class);
+//                    likedUserList.add(userDto);
+//                }
+//                reviewPageDto.setIsLiked(likedUserList);
+//            }
+//            if (contentReview.getDislikes()>0){
+//                List<ReviewDislikes> reviewDisLikes = reviewDisLikesRepo.findByDislikedReview_Id(contentReview.getId());
+//                List<UserDto> disLikedUserList = new ArrayList<>();
+//                for (ReviewDislikes reviewDisLike : reviewDisLikes){
+//                    UserEntity userEntity = reviewDisLike.getDislikedByUser();
+//                    userDto = modelMapper.map(userEntity,UserDto.class);
+//                    disLikedUserList.add(userDto);
+//                }
+//                reviewPageDto.setDisLiked(disLikedUserList);
+//            }
+//            if(contentReview.isReplied()>0){
+//                List<ReviewReplies> reviewRepliesList = reviewRepliesRepo.findByReview_Id(contentReview.getId());
+//                List<CommentsDto> reivewRepliesDtoList = new ArrayList<>();
+//                for(ReviewReplies reviewReplies: reviewRepliesList){
+//                    ReivewRepliesDto reviewRepliesDto = modelMapper.map(reviewReplies,ReivewRepliesDto.class);
+//                    reviewRepliesDto.setReply(reviewReplies.getReply());
+//                    UserDto user = modelMapper.map(reviewReplies.getRepliedUser(),UserDto.class);
+//                    reviewRepliesDto.setUserDto(user);
+//                    List<CommentReplyEntity> commentReplyEntityList = commentReplyRepo.findByMasterComment_Id(reviewReplies.getId());
+//                        List<ReviewReplies> commentRepliesList = new ArrayList<>();
+//                        for(CommentReplyEntity commentReplyEntity :commentReplyEntityList){
+//                            commentRepliesList.add(commentReplyEntity.getCommentedBy());
+//                      }
+//                    CommentsDto commentsDto = new CommentsDto();
+//                    commentsDto.setCommentReply(reviewRepliesDto);
+//                    commentsDto.setReplies(commentReplyEntityList);
+//                    reivewRepliesDtoList.add(commentsDto);
+//                }
+//                reviewPageDto.setReviewReplies(reivewRepliesDtoList);
+//            }
         }
 
 
@@ -214,7 +294,7 @@ public class ReviewPageServiceImpl implements ReviewPageService {
     }
 
     @Override
-    public ReviewPageDto setReviewReply(long reviewId, String comment) {
+    public SingleReviewPageDto setReviewReply(long reviewId, String comment) {
         UserEntity user = authService.getCurrentUser();
         Optional<ContentReviews> contentReviews = contentReviewsRepo.findById(reviewId);
         long reviewRepliesCount = contentReviews.get().isReplied()+1;

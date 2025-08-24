@@ -79,5 +79,18 @@ public class UserContentInteraction extends BaseEntity {
     public void setContentId(Long contentId) {
         this.contentId = contentId;
     }
+
+    @Override
+    public String toString() {
+        return "UserContentInteraction{" +
+                "id=" + id +
+                ", isLiked=" + isLiked +
+                ", isWatched=" + isWatched +
+                ", rating=" + rating +
+                ", review=" + review +
+                ", user=" + user +
+                ", contentId=" + contentId +
+                '}';
+    }
 }
 

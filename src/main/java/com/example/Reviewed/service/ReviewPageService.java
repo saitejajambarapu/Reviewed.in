@@ -1,6 +1,7 @@
 package com.example.Reviewed.service;
 
 import com.example.Reviewed.Dto.ReviewPageDto;
+import com.example.Reviewed.Dto.SingleReviewPageDto;
 import com.example.Reviewed.Dto.UserDto;
 import com.example.Reviewed.model.CommentReplyEntity;
 
@@ -10,12 +11,12 @@ import java.util.List;
 public interface ReviewPageService {
     List<ReviewPageDto> AllReviews();
 
-    ReviewPageDto getReviewByID(long id);
+    SingleReviewPageDto getReviewByID(long id);
 
     List<UserDto> setReviewLike(long reviewId);
     List<UserDto> setReviewDisLike(long reviewId);
 
-    ReviewPageDto setReviewReply(long reviewId, String comment);
+    SingleReviewPageDto setReviewReply(long reviewId, String comment);
 
     List<UserDto> removeReviewLike(long reviewId);
 

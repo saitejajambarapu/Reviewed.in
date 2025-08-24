@@ -1,15 +1,9 @@
 package com.example.Reviewed.Dto;
 
-import com.example.Reviewed.model.CommentReplyEntity;
-import com.example.Reviewed.model.ContentReviews;
-import com.example.Reviewed.model.ReviewReplies;
-import lombok.Data;
-
 import java.util.List;
-import java.util.Map;
 
-@Data
-public class ReviewPageDto {
+public class SingleReviewPageDto {
+
     private Long id;
 
     private String imdbId;
@@ -32,6 +26,16 @@ public class ReviewPageDto {
     private boolean isLikedList;
 
     private boolean isWatchList;
+
+    private List<ReviewPageDto> similarReviews;
+
+    public List<ReviewPageDto> getSimilarReviews() {
+        return similarReviews;
+    }
+
+    public void setSimilarReviews(List<ReviewPageDto> similarReviews) {
+        this.similarReviews = similarReviews;
+    }
 
     public boolean isLikedList() {
         return isLikedList;

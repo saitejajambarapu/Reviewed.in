@@ -3,13 +3,13 @@ package com.example.Reviewed.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
 public class ContentReviews extends BaseEntity {
 
     @Id
@@ -30,6 +30,7 @@ public class ContentReviews extends BaseEntity {
     private List<ReviewLikes> likedList = new ArrayList<>();
 
     @OneToOne(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private UserContentInteraction interaction;
 
     @OneToMany(mappedBy = "dislikedReview", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -96,6 +97,20 @@ public class ContentReviews extends BaseEntity {
 
     public void setReviewedBy(UserEntity reviewedBy) {
         this.reviewedBy = reviewedBy;
+    }
+
+    @Override
+    public String toString() {
+        return "ContentReviews{" +
+                "id=" + id +
+                ", review='" + review + '\'' +
+                ", likes=" + likes +
+                ", dislikes=" + dislikes +
+                ", isReplied=" + isReplied +
+                ", contentId=" + contentId +
+                ", reviewedById=" + (reviewedBy != null ? reviewedBy.getId() : null) +
+                ", reviewRepliesCount=" + (reviewReplies != null ? reviewReplies.size() : 0) +
+                '}';
     }
 
 }
