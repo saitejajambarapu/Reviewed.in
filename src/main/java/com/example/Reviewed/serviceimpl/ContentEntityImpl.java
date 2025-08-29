@@ -1,8 +1,6 @@
 package com.example.Reviewed.serviceimpl;
 
-import com.example.Reviewed.Dto.ContentDto;
-import com.example.Reviewed.Dto.ContentDtoWithUserInteractions;
-import com.example.Reviewed.Dto.PaginatedContentMono;
+import com.example.Reviewed.Dto.*;
 import com.example.Reviewed.model.ContentEntity;
 import com.example.Reviewed.model.UserContentInteraction;
 import com.example.Reviewed.model.UserEntity;
@@ -56,13 +54,18 @@ public class ContentEntityImpl implements ContentEntityInterface {
     }
 
 
-    public List<ContentDtoWithUserInteractions> fetchcontentByName(String title) {
+    public PaginatedDto fetchcontentByName(ContentRequestDto contentRequestDto) {
         UserEntity user = authService.getCurrentUser();
         List<ContentDtoWithUserInteractions> contentDtoList = new ArrayList<>();
-        List<ContentEntity> contentEntity = contentRepository.findByTitleLike(title);
+        PaginatedDto paginatedDto =new PaginatedDto();
+        List<ContentEntity> contentEntity = new ArrayList<>();
+        if(!contentRequestDto.getIsApi()){
+           contentEntity = contentRepository.findByTitleLike(contentRequestDto.getTitle());
+        }
+
         if (contentEntity.isEmpty()) {
-            List<ContentDtoWithUserInteractions> contentDtoWithUserInteractions = apiService.fetchMovieByTitle(title);
-            return contentDtoWithUserInteractions;
+             paginatedDto = apiService.fetchMovieByTitle(contentRequestDto);
+            return paginatedDto;
         }
         modelMapper.typeMap(ContentEntity.class,ContentDtoWithUserInteractions.class)
                 .addMappings(mapper -> mapper.skip(ContentDtoWithUserInteractions::setRating));
@@ -70,8 +73,10 @@ public class ContentEntityImpl implements ContentEntityInterface {
         contentDtoList = contentDtoList.stream()
                 .map(this::checkContentInteractions)
                 .collect(Collectors.toList());
-
-        return contentDtoList;
+        paginatedDto.setIsApi(false);
+        paginatedDto.setTotalResults(1l);
+        paginatedDto.setContents(contentDtoList);
+        return paginatedDto;
     }
 
     public List<ContentDtoWithUserInteractions> fetchContentAfterSaving(String title) {

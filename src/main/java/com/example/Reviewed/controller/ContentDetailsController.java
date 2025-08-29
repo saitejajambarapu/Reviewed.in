@@ -4,6 +4,8 @@ import com.example.Reviewed.Dto.ContentDto;
 //import com.example.Reviewed.model.ContentDetails;
 //import com.example.Reviewed.service.ContentDetailsService;
 import com.example.Reviewed.Dto.ContentDtoWithUserInteractions;
+import com.example.Reviewed.Dto.ContentRequestDto;
+import com.example.Reviewed.Dto.PaginatedDto;
 import com.example.Reviewed.serviceimpl.ApiService;
 import com.example.Reviewed.serviceimpl.ContentEntityImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +33,9 @@ public class ContentDetailsController {
 //        List<ContentDetails> contentDetails= contentDetailsService.getContentDetails();
 //        return contentDetails;
 //    }
-    @GetMapping()
-    public List<ContentDtoWithUserInteractions> getContentsByTitle(@RequestParam String title) {
-        return contentEntityImpl.fetchcontentByName(title);
+    @PostMapping()
+    public PaginatedDto getContentsByTitle(@RequestBody ContentRequestDto requestDto) {
+        return contentEntityImpl.fetchcontentByName(requestDto);
         //return apiService.fetchMovieByTitle(title);
     }
 
@@ -41,4 +43,7 @@ public class ContentDetailsController {
     public ContentDtoWithUserInteractions getContentDetailsByImdbId(@RequestParam String imdbId){
         return  contentEntityImpl.fetchContentByImdbId(imdbId);
     }
+
+//    @PostMapping("/search/{contentName}")
+//    public PaginatedDto getContentsByTitle(@RequestParam String C)
 }

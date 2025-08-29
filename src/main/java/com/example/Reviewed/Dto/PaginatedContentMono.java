@@ -10,7 +10,7 @@ public class PaginatedContentMono {
     private List<ContentDto> contentDtoList;
     private String totalResults;
     @JsonProperty("Response")
-    private String Response;
+    private Boolean Response;
 
     public List<ContentDto> getContentDtoList() {
         return contentDtoList;
@@ -28,11 +28,11 @@ public class PaginatedContentMono {
         this.totalResults = totalResults;
     }
 
-    public String getResponse() {
+    public Boolean getResponse() {
         return Response;
     }
 
-    public void setResponse(String response) {
+    public void setResponse(Boolean response) {
         Response = response;
     }
 }

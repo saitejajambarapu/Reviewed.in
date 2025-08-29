@@ -158,7 +158,7 @@ public class ReviewPageServiceImpl implements ReviewPageService {
              List<UserContentInteraction> similarReviewsContents = userContentInteractionRepo.findByContentId(userContentInteraction.getContentId());
              if(similarReviewsContents!=null){
                  for(UserContentInteraction contentInteraction : similarReviewsContents){
-                     if(contentInteraction.getReview().getId()!=reviewPageDto.getId()){
+                     if(contentInteraction.getReview()!=null&&contentInteraction.getReview().getId()!=reviewPageDto.getId()){
                          ReviewPageDto singleReviewPageDto = generateReviewByUCI(contentInteraction);
                          reviewPageDtos.add(singleReviewPageDto);
                      }

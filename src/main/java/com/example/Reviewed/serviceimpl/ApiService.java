@@ -1,8 +1,6 @@
 package com.example.Reviewed.serviceimpl;
 
-import com.example.Reviewed.Dto.ContentDto;
-import com.example.Reviewed.Dto.ContentDtoWithUserInteractions;
-import com.example.Reviewed.Dto.PaginatedContentMono;
+import com.example.Reviewed.Dto.*;
 import com.example.Reviewed.model.ContentEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,29 +25,28 @@ public class ApiService {
         this.webClient = builder.baseUrl(apiUrl).build();
     }
 
-    public List<ContentDtoWithUserInteractions> fetchMovieByTitle(String title) {
-        int pageNumber = 1;
-        while(true){
-            int finalPageNumber = pageNumber;
+    public PaginatedDto fetchMovieByTitle(ContentRequestDto contentRequestDto) {
             Mono<PaginatedContentMono> contentMono =  webClient.get()
                     .uri(uriBuilder -> uriBuilder
-                            .queryParam("s", title)
-                            .queryParam("page", finalPageNumber)
+                            .queryParam("s", contentRequestDto.getTitle())
+                            .queryParam("page", contentRequestDto.getPageNumber())
                             .queryParam("apikey", apiKey)
                             .build())
                     .retrieve()
                     .bodyToMono(PaginatedContentMono.class);
             PaginatedContentMono paginatedContentMono = contentMono.block();
-            if(paginatedContentMono.getTotalResults()!=null && ((Integer.parseInt(paginatedContentMono.getTotalResults()))-(paginatedContentMono.getContentDtoList().size()*pageNumber)<=0)){
+            if(paginatedContentMono.getResponse()){
                 contentEntity.saveEntity(paginatedContentMono);
-                break;
             }else{
                 if (paginatedContentMono.getTotalResults()!=null)  contentEntity.saveEntity(paginatedContentMono);
 
         }
-            pageNumber+=1;
-        }
-        return  contentEntity.fetchContentAfterSaving(title);
+            PaginatedDto paginatedDto = new PaginatedDto();
+            paginatedDto.setIsApi(true);
+            paginatedDto.setTotalResults(Long.parseLong(paginatedContentMono.getTotalResults()));
+            List<ContentDtoWithUserInteractions> contentDtoWithUserInteractions = contentEntity.fetchContentAfterSaving(contentRequestDto.getTitle());
+            paginatedDto.setContents(contentDtoWithUserInteractions);
+        return  paginatedDto;
     }
 
     public ContentEntity fetchContentByImdbId(String imdbId) {
