@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ContentRepository extends JpaRepository<ContentEntity, Long> {
     ContentEntity findByImdbID(String imdbID);
@@ -15,5 +16,9 @@ public interface ContentRepository extends JpaRepository<ContentEntity, Long> {
             "WHERE title LIKE CONCAT('%', :title, '%')\n" +
             "ORDER BY year DESC;\n", nativeQuery = true)
     List<ContentEntity> findByTitleLike(@Param("title") String title);
+
+    @Query(value = "SELECT imdbid \n" +
+            "FROM content_db \n", nativeQuery = true)
+    Set<String> getExistingImdbIds();
 
 }

@@ -140,6 +140,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             reviewPageDto.setContentName(contentEntity.get().getTitle());
             reviewPageDto.setContentPoster(contentEntity.get().getPoster());
             reviewPageDto.setId(contentEntity.get().getId());
+            reviewPageDto.setImdbId(contentEntity.get().getImdbID());
             if(userContentInteraction.isLiked()){
                 likedReviewPageDtoList.add(reviewPageDto);
             }

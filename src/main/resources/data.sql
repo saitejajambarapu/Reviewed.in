@@ -1,0 +1,16 @@
+INSERT INTO reviewed.home_page_sections_entity (column_name, query) VALUES
+('Trending Now', 'SELECT * FROM reviewed.content_db ORDER BY imdb_votes DESC LIMIT 10'),
+('Top IMDb Rated', 'SELECT * FROM reviewed.content_db ORDER BY CAST(imdb_rating AS DECIMAL(3,1)) DESC LIMIT 10'),
+('Latest Releases', 'SELECT * FROM reviewed.content_db ORDER BY released DESC LIMIT 10'),
+('Action Movies', 'SELECT * FROM reviewed.content_db WHERE LOWER(genre) LIKE ''%action%'' ORDER BY released DESC'),
+('Comedy Picks', 'SELECT * FROM reviewed.content_db WHERE LOWER(genre) LIKE ''%comedy%'' ORDER BY CAST(imdb_rating AS DECIMAL(3,1)) DESC'),
+('English Movies', 'SELECT * FROM reviewed.content_db WHERE LOWER(language) LIKE ''%english%'' ORDER BY released DESC'),
+('Regional Movies', 'SELECT * FROM reviewed.content_db WHERE LOWER(language) IN (''hindi'', ''telugu'', ''tamil'', ''malayalam'') ORDER BY released DESC'),
+('Classics', 'SELECT * FROM reviewed.content_db WHERE CAST(year AS UNSIGNED) < 2000 ORDER BY CAST(year AS UNSIGNED) DESC'),
+('Family Friendly', 'SELECT * FROM reviewed.content_db WHERE rated IN (''U'', ''PG'') ORDER BY released DESC'),
+('Horror & Thriller', 'SELECT * FROM reviewed.content_db WHERE LOWER(genre) LIKE ''%horror%'' OR LOWER(genre) LIKE ''%thriller%'' ORDER BY released DESC'),
+('Movies 2023', 'SELECT * FROM reviewed.content_db WHERE year = ''2023'' ORDER BY CAST(imdb_rating AS DECIMAL(3,1)) DESC'),
+('Movies 2022', 'SELECT * FROM reviewed.content_db WHERE year = ''2022'' ORDER BY CAST(imdb_rating AS DECIMAL(3,1)) DESC'),
+('Short Duration', 'SELECT * FROM reviewed.content_db WHERE CAST(SUBSTRING(runtime, 1, LOCATE('' '', runtime) - 1) AS UNSIGNED) <= 90 ORDER BY released DESC'),
+('Binge-worthy Series', 'SELECT * FROM reviewed.content_db WHERE type = ''series'' ORDER BY CAST(imdb_rating AS DECIMAL(3,1)) DESC'),
+('Award Winning', 'SELECT * FROM reviewed.content_db WHERE awards IS NOT NULL AND awards <> '''' ORDER BY CAST(year AS UNSIGNED) DESC');

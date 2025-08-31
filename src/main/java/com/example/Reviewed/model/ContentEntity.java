@@ -38,6 +38,7 @@ public class ContentEntity {
     private String metascore;
     private String imdbRating;
     private String imdbVotes;
+    @Column(unique = true)
     private String imdbID;
     private String type;
     private String totalSeasons;

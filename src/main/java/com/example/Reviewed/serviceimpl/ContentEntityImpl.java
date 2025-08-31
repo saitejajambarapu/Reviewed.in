@@ -1,6 +1,7 @@
 package com.example.Reviewed.serviceimpl;
 
 import com.example.Reviewed.Dto.*;
+import com.example.Reviewed.aspect.LoggerAspect;
 import com.example.Reviewed.model.ContentEntity;
 import com.example.Reviewed.model.UserContentInteraction;
 import com.example.Reviewed.model.UserEntity;
@@ -8,12 +9,16 @@ import com.example.Reviewed.repository.ContentRepository;
 import com.example.Reviewed.repository.UserContentInteractionRepo;
 import com.example.Reviewed.service.ContentEntityInterface;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,24 +40,51 @@ public class ContentEntityImpl implements ContentEntityInterface {
     @Autowired
     AuthServiceImpl authService;
 
+    private static final Logger logger = LoggerFactory.getLogger(LoggerAspect.class);
+
     public void saveEntity(PaginatedContentMono paginatedContentMonoRes) {
+        List<ContentEntity> contentEntityList =new ArrayList<>();
+        Set<String> imdbIds = contentRepository.getExistingImdbIds();
+        Set<String> newSetImdbId = new HashSet<>();
         for (ContentDto contentDtoRes : paginatedContentMonoRes.getContentDtoList()) {
-            saveContentEntity(contentDtoRes);
+            modelMapper.typeMap(ContentDto.class, ContentEntity.class)
+                    .addMappings(mapper -> mapper.skip(ContentEntity::setId));
+            ContentEntity contentEntity = modelMapper.map(contentDtoRes, ContentEntity.class);
+            if (contentEntity.getRatings() != null) {
+                contentEntity.getRatings().forEach(rating -> rating.setContent(contentEntity));
+            }
+            if(!imdbIds.contains(contentEntity.getImdbID()) && !newSetImdbId.contains(contentEntity.getImdbID())){
+                newSetImdbId.add(contentEntity.getImdbID());
+                contentEntityList.add(contentEntity);
+            }
         }
+        if(contentEntityList.size()>0) saveContentEntity(contentEntityList);
     }
 
-    public void saveContentEntity(ContentDto contentDtoRes) {
-        modelMapper.typeMap(ContentDto.class, ContentEntity.class)
-                .addMappings(mapper -> mapper.skip(ContentEntity::setId));
-        ContentEntity contentEntity = modelMapper.map(contentDtoRes, ContentEntity.class);
-        if (contentEntity.getRatings() != null) {
-            contentEntity.getRatings().forEach(rating -> rating.setContent(contentEntity));
-        }
-        ContentEntity contentEntity1 = contentRepository.save(contentEntity);
-        ContentDtoWithUserInteractions contentDto = modelMapper.map(contentEntity1, ContentDtoWithUserInteractions.class);
-        System.out.println();
+    public void saveContentEntity(List<ContentEntity> contentEntityList) {
+
+        List<ContentEntity> contentEntity1 = contentRepository.saveAll(contentEntityList);
+//        List<ContentDtoWithUserInteractions> contentDtos = contentEntity1.stream()
+//                .map(entity -> modelMapper.map(entity, ContentDtoWithUserInteractions.class))
+//                .toList();
+//        System.out.println();
     }
 
+    public Boolean fetchSkippedList(Long startingValue,ContentRequestDto requestDto){
+       try {
+           for(Long i=startingValue+1;i<=requestDto.getPageNumber();i++){
+               ContentRequestDto requestDto1 = new ContentRequestDto();
+               requestDto1.setIsApi(requestDto.getIsApi());
+               requestDto1.setPageNumber(i);
+               requestDto1.setTitle(requestDto.getTitle());
+               apiService.fetchContentList(requestDto1);
+           }
+           return true;
+       }catch (Exception ex){
+           logger.info("Exception occured inn fetchSkippedList: {}", ex);
+       }
+       return false;
+    }
 
     public PaginatedDto fetchcontentByName(ContentRequestDto contentRequestDto) {
         UserEntity user = authService.getCurrentUser();

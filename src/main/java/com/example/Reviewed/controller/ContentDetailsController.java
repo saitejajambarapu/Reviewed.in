@@ -39,6 +39,15 @@ public class ContentDetailsController {
         //return apiService.fetchMovieByTitle(title);
     }
 
+    @PostMapping("/skippedlist/{startingValue}")
+    public Boolean getContentsDetilsAfterSkipping(@PathVariable long startingValue,@RequestBody ContentRequestDto requestDto) {
+        if(requestDto.getIsApi()){
+            return contentEntityImpl.fetchSkippedList(startingValue,requestDto);
+        }
+         return true;
+        //return apiService.fetchMovieByTitle(title);
+    }
+
     @GetMapping("/imdb")
     public ContentDtoWithUserInteractions getContentDetailsByImdbId(@RequestParam String imdbId){
         return  contentEntityImpl.fetchContentByImdbId(imdbId);

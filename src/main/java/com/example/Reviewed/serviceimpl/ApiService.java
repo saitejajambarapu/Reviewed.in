@@ -26,27 +26,36 @@ public class ApiService {
     }
 
     public PaginatedDto fetchMovieByTitle(ContentRequestDto contentRequestDto) {
-            Mono<PaginatedContentMono> contentMono =  webClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                            .queryParam("s", contentRequestDto.getTitle())
-                            .queryParam("page", contentRequestDto.getPageNumber())
-                            .queryParam("apikey", apiKey)
-                            .build())
-                    .retrieve()
-                    .bodyToMono(PaginatedContentMono.class);
-            PaginatedContentMono paginatedContentMono = contentMono.block();
-            if(paginatedContentMono.getResponse()){
-                contentEntity.saveEntity(paginatedContentMono);
-            }else{
-                if (paginatedContentMono.getTotalResults()!=null)  contentEntity.saveEntity(paginatedContentMono);
-
-        }
-            PaginatedDto paginatedDto = new PaginatedDto();
-            paginatedDto.setIsApi(true);
+        PaginatedContentMono paginatedContentMono = fetchContentList(contentRequestDto);
+        PaginatedDto paginatedDto = new PaginatedDto();
+        paginatedDto.setIsApi(true);
+        if(paginatedContentMono.getContentDtoList()!=null){
             paginatedDto.setTotalResults(Long.parseLong(paginatedContentMono.getTotalResults()));
             List<ContentDtoWithUserInteractions> contentDtoWithUserInteractions = contentEntity.fetchContentAfterSaving(contentRequestDto.getTitle());
             paginatedDto.setContents(contentDtoWithUserInteractions);
+        }
+
+
         return  paginatedDto;
+    }
+
+    public PaginatedContentMono fetchContentList(ContentRequestDto contentRequestDto){
+        Mono<PaginatedContentMono> contentMono =  webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .queryParam("s", contentRequestDto.getTitle())
+                        .queryParam("page", contentRequestDto.getPageNumber())
+                        .queryParam("apikey", apiKey)
+                        .build())
+                .retrieve()
+                .bodyToMono(PaginatedContentMono.class);
+        PaginatedContentMono paginatedContentMono = contentMono.block();
+        if(paginatedContentMono.getResponse()){
+            contentEntity.saveEntity(paginatedContentMono);
+            return paginatedContentMono;
+        }else{
+            if (paginatedContentMono.getTotalResults()!=null)  contentEntity.saveEntity(paginatedContentMono);
+        }
+        return paginatedContentMono;
     }
 
     public ContentEntity fetchContentByImdbId(String imdbId) {
