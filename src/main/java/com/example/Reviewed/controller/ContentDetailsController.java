@@ -53,6 +53,13 @@ public class ContentDetailsController {
         return  contentEntityImpl.fetchContentByImdbId(imdbId);
     }
 
+    @GetMapping("/powersearch")
+    public ContentDto getExactContentByNameAndYear(@RequestParam String name,@RequestParam String
+                                                      year){
+        return apiService.getContentByNameAndYear(name,year);
+
+    }
+
 //    @PostMapping("/search/{contentName}")
 //    public PaginatedDto getContentsByTitle(@RequestParam String C)
 }
