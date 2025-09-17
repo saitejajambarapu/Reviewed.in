@@ -114,7 +114,7 @@ public class ContentEntityImpl implements ContentEntityInterface {
     public List<ContentDtoWithUserInteractions> fetchContentAfterSaving(String title) {
         UserEntity user = authService.getCurrentUser();
         List<ContentDtoWithUserInteractions> contentDtoList = new ArrayList<>();
-        List<ContentEntity> contentEntity = contentRepository.findByTitleLike(title);
+        List<ContentEntity> contentEntity = contentRepository.findByTitleAsc(title);
         mapContentEntityToDto(contentEntity, contentDtoList);
         contentDtoList = contentDtoList.stream()
                 .map(this::checkContentInteractions)

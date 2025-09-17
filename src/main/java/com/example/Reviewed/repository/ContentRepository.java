@@ -17,6 +17,13 @@ public interface ContentRepository extends JpaRepository<ContentEntity, Long> {
             "ORDER BY year DESC;\n", nativeQuery = true)
     List<ContentEntity> findByTitleLike(@Param("title") String title);
 
+    @Query(value = "SELECT * \n" +
+            "FROM content_db \n" +
+            "WHERE title LIKE CONCAT('%', :title, '%')\n" +
+            "ORDER BY id DESC;\n", nativeQuery = true)
+    List<ContentEntity> findByTitleAsc(@Param("title") String title);
+
+
     @Query(value = "SELECT imdbid \n" +
             "FROM content_db \n", nativeQuery = true)
     Set<String> getExistingImdbIds();
