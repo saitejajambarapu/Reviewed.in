@@ -105,7 +105,7 @@ public class ContentEntityImpl implements ContentEntityInterface {
         contentDtoList = contentDtoList.stream()
                 .map(this::checkContentInteractions)
                 .collect(Collectors.toList());
-        paginatedDto.setIsApi(false);
+        paginatedDto.setApi(false);
         paginatedDto.setTotalResults(1l);
         paginatedDto.setContents(contentDtoList);
         return paginatedDto;

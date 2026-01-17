@@ -38,7 +38,7 @@ public class ApiService {
     public PaginatedDto fetchMovieByTitle(ContentRequestDto contentRequestDto) {
         PaginatedContentMono paginatedContentMono = fetchContentList(contentRequestDto);
         PaginatedDto paginatedDto = new PaginatedDto();
-        paginatedDto.setIsApi(true);
+        paginatedDto.setApi(true);
         if(paginatedContentMono.getContentDtoList()!=null){
             paginatedDto.setTotalResults(Long.parseLong(paginatedContentMono.getTotalResults()));
             List<ContentDtoWithUserInteractions> contentDtoWithUserInteractions = contentEntity.fetchContentAfterSaving(contentRequestDto.getTitle());

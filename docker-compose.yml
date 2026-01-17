@@ -1,0 +1,46 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: reviewed-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: reviewed
+      MYSQL_ROOT_PASSWORD: Sai2714@sql
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pSai2714@sql"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  app:
+    build: .
+    container_name: reviewed-app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_APPLICATION_NAME: Reviewed
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/reviewed?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Sai2714@sql
+
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+      SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+
+      apikey: fa070261
+      omdb_api_url: https://www.omdbapi.com/
+      deploy_env: development
+      jwt_secretKey: r123view123ed2714reviewedwebsitew123234p
+
+volumes:
+  mysql_data:

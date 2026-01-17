@@ -10,6 +10,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -24,8 +25,10 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class AuthController {
 
-    private final UserServiceImpl userService;
-    private final AuthServiceImpl authService;
+    @Autowired
+    private UserServiceImpl userService;
+    @Autowired
+    private AuthServiceImpl authService;
 
     @Value("${deploy.env}")
     private String deployEnv;

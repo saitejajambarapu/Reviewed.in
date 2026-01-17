@@ -24,8 +24,10 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final com.example.Reviewed.security.JwtService jwtService;
-    private final UserServiceImpl userService;
+    @Autowired
+    private com.example.Reviewed.security.JwtService jwtService;
+    @Autowired
+    private UserServiceImpl userService;
 
     @Autowired
     @Qualifier("handlerExceptionResolver")

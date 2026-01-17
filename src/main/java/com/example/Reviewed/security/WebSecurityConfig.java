@@ -2,6 +2,7 @@ package com.example.Reviewed.security;
 
 import com.example.Reviewed.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,7 +22,8 @@ import static com.example.Reviewed.model.enums.Roles.REVIEWR;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    private final JwtAuthFilter jwtAuthFilter;
+    @Autowired
+    private JwtAuthFilter jwtAuthFilter;
 //    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     private static final String[] publicRoutes = {
