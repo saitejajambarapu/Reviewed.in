@@ -1,0 +1,35 @@
+# Maven build output
+target/
+
+# Local Maven repository cache (optional)
+.m2/
+
+# Git
+.git
+.gitignore
+
+# IntelliJ / IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env / secrets
+.env
+*.env
+
+# Logs
+logs/
+*.log
+
+# Docker files (optional)
+docker-compose.yml
+docker-compose.*.yml
